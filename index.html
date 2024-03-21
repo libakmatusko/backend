@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Solver</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Sudoku Solver</h1>
+    <form id="sudoku-form">
+        <div id="sudoku-grid">
+            <!-- Generate 9x9 Sudoku grid -->
+            <!-- Each cell has an id 'cell-row-col' -->
+            <!-- For simplification, row and col are 0-indexed -->
+            <!-- Users can input numbers 1-9 -->
+            {{for row in range(9):}}
+                <div class="sudoku-row">
+                    {{for col in range(9):}}
+                        <input type="text" id="cell-{{row}}-{{col}}" class="sudoku-cell" maxlength="1">
+                    {{endfor}}
+                </div>
+            {{endfor}}
+        </div>
+        <button type="button" id="solve-button">Solve Sudoku</button>
+    </form>
+    <script src="script.js"></script>
+</body>
+</html>
