@@ -1,96 +1,65 @@
-from copy import deepcopy
-from typing import Union
-from time import time
 from flask import Flask, request, jsonify
-
-orig_seed = time()
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, support_credentials=True)
 
 @app.route('/solve/<uuid>', methods=['GET', 'POST'])
 def api_request(uuid):
     content = request.json
     table = content['table']
-    solved = riesitel(tabulka=table)
-    #print(*solved[0], sep='\n')
+    solved = solve_sudoku(table)
+    print("Returning the following solved Sudoku from the server:")
+    print(is_valid_sudoku(solved))
+    if solved is None:
+        return jsonify({"uuid":uuid, 'message':'Sudoku cannot be solved'})
     return jsonify({"uuid":uuid, 'solved':solved})
 
+def is_valid_sudoku(grid):
+    for i in range(9):
+        if len(set(grid[i])) != 9 or len(set([grid[j][i] for j in range(9)])) != 9:
+            return False
+    for i in range(0, 9, 3):
+        for j in range(0, 9, 3):
+            if len(set([grid[x][y] for x in range(i, i+3) for y in range(j, j+3)])) != 9:
+                return False
+    return True
 
-def riesitel(tabulka: list[list[int]], mode: int=1, max_depth: int=30) -> Union[list[list[list[int]]], list[list[set[int]]]]:
-    if max_depth == 0:
-        raise Exception('Recursion too deep.')
-    moznosti = [[set([i for i in range(1,10)]) for x in range(9)] for y in range(9)]
-    kopia = deepcopy(tabulka)
+def find_empty_location(arr):
+    for row in range(9):
+        for col in range(9):
+            if arr[row][col] == 0:
+                return row, col
+    return -1, -1
 
-    for iy, y in enumerate(tabulka):
-        for ix, x in enumerate(y):
-            if x !=0:
-                for mx in range(9):
-                    moznosti[iy][mx].discard(x)
-                for my in range(9):
-                    moznosti[my][ix].discard(x)
-                for my in range(3):
-                    for mx in range(3):
-                        moznosti[my + (iy//3)*3][mx + (ix//3)*3].discard(x)
-                moznosti[iy][ix] = {x}
-    #print(*moznosti, sep='\n')
+def used_in_row(arr, row, num):
+    return any(num == arr[row][col] for col in range(9))
 
-    for iy, y in enumerate(moznosti):
-        pocet_moznych = []
-        for x in y:
-            pocet_moznych += list(x)
-        for n in range(1, 10):
-            if pocet_moznych.count(n) == 1:
-                for ix in range(9):
-                    if n in moznosti[iy][ix]:
-                        moznosti[iy][ix] = {n}
-    
-    for ix in range(9):
-        pocet_moznych = []
-        for iy in range(9):
-            pocet_moznych += list(moznosti[iy][ix])
-        for n in range(1, 10):
-            if pocet_moznych.count(n) == 1:
-                for iy in range(9):
-                    if n in moznosti[iy][ix]:
-                        moznosti[iy][ix] = {n}
+def used_in_col(arr, col, num):
+    return any(num == arr[row][col] for row in range(9))
 
-    for iy in range(0, 9, 3):
-        for ix in range(0, 9, 3):
-            pocet_moznych = []
-            for iy2 in range(3):
-                for ix2 in range(3):
-                    pocet_moznych += list(moznosti[iy + iy2][ix + ix2])
-            for n in range(1, 10):
-                if pocet_moznych.count(n) == 1:
-                    for iy2 in range(3):
-                        for ix2 in range(3):
-                            if n in moznosti[iy + iy2][ix + ix2]:
-                                moznosti[iy + iy2][ix + ix2] = {n}
-    
-    for iy, y in enumerate(moznosti):
-        for ix, x in enumerate(y):
-            if len(x) == 1:
-                tabulka[iy][ix] = list(x)[0]
-                
+def used_in_box(arr, row, col, num):
+    for r in range(3):
+        for c in range(3):
+            if arr[r + row][c + col] == num:
+                return True
+    return False
 
-    if kopia == tabulka:
-        if mode == 2:
-            return moznosti
-        for iy, y in enumerate(deepcopy(moznosti)):
-            for ix, x in enumerate(y):
-                riesenia = []
-                if len(x) == 0:
-                    return []
-                elif len(x) != 1:
-                    for n in x:
-                        tabulka[iy][ix] = n
-                        riesenia.extend(riesitel(tabulka=deepcopy(tabulka), max_depth=max_depth-1))
-                    moznosti = None
-                    return riesenia
-        moznosti = None
-        return [tabulka]
-    return riesitel(tabulka=tabulka, mode=mode, max_depth=max_depth-1)
+def is_location_safe(arr, row, col, num):
+    return not used_in_row(arr, row, num) and not used_in_col(arr, col, num) and not used_in_box(arr, row - row % 3, col - col % 3, num)
+
+def solve_sudoku(arr):
+    row, col = find_empty_location(arr)
+    if row == -1 and col == -1:
+        return arr
+
+    for num in range(1, 10):
+        if is_location_safe(arr, row, col, num):
+            arr[row][col] = num
+            if solve_sudoku(arr):
+                return arr
+            arr[row][col] = 0
+    return None  # return None if the Sudoku can't be solved
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0', port = 5000)

@@ -4,26 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sudoku Solver</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Add your CSS styles here or link an external stylesheet /
+        / Example styles for the Sudoku grid */
+        .sudoku-row {
+            display: flex;
+        }
+        .sudoku-cell {
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            margin: 2px;
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
-    <h1>Sudoku Solver</h1>
-    <form id="sudoku-form">
-        <div id="sudoku-grid">
-            <!-- Generate 9x9 Sudoku grid -->
-            <!-- Each cell has an id 'cell-row-col' -->
-            <!-- For simplification, row and col are 0-indexed -->
-            <!-- Users can input numbers 1-9 -->
-            {{for row in range(9):}}
-                <div class="sudoku-row">
-                    {{for col in range(9):}}
-                        <input type="text" id="cell-{{row}}-{{col}}" class="sudoku-cell" maxlength="1">
-                    {{endfor}}
-                </div>
-            {{endfor}}
-        </div>
-        <button type="button" id="solve-button">Solve Sudoku</button>
-    </form>
-    <script src="script.js"></script>
+<h1>Sudoku Solver</h1>
+<form id="sudoku-form">
+    <div id="sudoku-grid">
+        <!-- JavaScript will generate the Sudoku grid here -->
+    </div>
+    <button type="button" id="solve-button">Solve Sudoku</button>
+</form>
+<script>
+    // Generate the Sudoku grid dynamically using JavaScript
+    // Generate the Sudoku grid dynamically using JavaScript
+    const sudokuGrid = document.getElementById('sudoku-grid');
+    for (let row = 0; row < 9; row++) {
+        const sudokuRow = document.createElement('div');
+        sudokuRow.classList.add('sudoku-row');
+        for (let col = 0; col < 9; col++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.id = `cell-${row}-${col}`;
+            input.classList.add('sudoku-cell');
+            input.maxLength = 1;
+            sudokuRow.appendChild(input);
+        }
+        sudokuGrid.appendChild(sudokuRow);
+    }
+</script>
+<!-- Add your JavaScript functionality in an external script file or here -->
+<script src="script.js"></script>
 </body>
 </html>
