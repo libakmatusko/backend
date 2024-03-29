@@ -9,7 +9,9 @@ document.getElementById("solve-button").addEventListener("click", function() {
         table.push(rowValues);
     }
     console.log("Sending the following Sudoku to the server:");
-    console.log(table);
+    for (var i = 0; i < table.length; i++) {
+        console.log(table[i])
+    }
     fetch(`http://localhost:5000/solve/123`, {
         method: 'POST',
         headers: {
