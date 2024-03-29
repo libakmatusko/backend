@@ -20,32 +20,29 @@
     </style>
 </head>
 <body>
-<h1>Sudoku Solver</h1>
-<form id="sudoku-form">
-    <div id="sudoku-grid">
-        <!-- JavaScript will generate the Sudoku grid here -->
-    </div>
-    <button type="button" id="solve-button">Solve Sudoku</button>
-</form>
-<script>
-    // Generate the Sudoku grid dynamically using JavaScript
-    // Generate the Sudoku grid dynamically using JavaScript
-    const sudokuGrid = document.getElementById('sudoku-grid');
-    for (let row = 0; row < 9; row++) {
-        const sudokuRow = document.createElement('div');
-        sudokuRow.classList.add('sudoku-row');
-        for (let col = 0; col < 9; col++) {
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.id = `cell-${row}-${col}`;
-            input.classList.add('sudoku-cell');
-            input.maxLength = 1;
-            sudokuRow.appendChild(input);
+    <h1>Sudoku Solver</h1>
+    <form id="sudoku-form">
+        <div id="sudoku-grid">
+            <!-- JavaScript will generate the Sudoku grid here -->
+        </div>
+        <button type="button" id="solve-button">Solve Sudoku</button>
+    </form>
+    <script>
+        const sudokuGrid = document.getElementById('sudoku-grid');
+        for (let row = 0; row < 9; row++) {
+            const sudokuRow = document.createElement('div');
+            sudokuRow.classList.add('sudoku-row');
+            for (let col = 0; col < 9; col++) {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `cell-${row}-${col}`;
+                input.classList.add('sudoku-cell');
+                input.maxLength = 1;
+                sudokuRow.appendChild(input);
+            }
+            sudokuGrid.appendChild(sudokuRow);
         }
-        sudokuGrid.appendChild(sudokuRow);
-    }
-</script>
-<!-- Add your JavaScript functionality in an external script file or here -->
-<script src="script.js"></script>
+    </script>
+    <script src="script.js"></script>
 </body>
 </html>
