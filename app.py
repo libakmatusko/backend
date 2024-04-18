@@ -1,8 +1,37 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import requests
+import json
 
 app = Flask(__name__)
 CORS(app, support_credentials=True)
+
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    data = request.json
+    message = data['message']
+    response = generate_response(message)
+    return jsonify({'response': response})
+
+def generate_response(message):
+    apiKey = 'sk-...'
+    endpoint = 'https://api.openai.com/v1/completions'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {apiKey}'
+    }
+    payload = {
+        'model': 'gpt-3.5-turbo-0125',
+        'prompt': message,
+        'max_tokens': 150  # Adjust as needed
+    }
+    response = requests.post(endpoint, headers=headers, json=payload)
+    data = response.json()
+    print(data)
+    return data['choices'][0]['text'].strip()
+
+
 
 @app.route('/solve/<uuid>', methods=['GET', 'POST'])
 def api_request(uuid):
