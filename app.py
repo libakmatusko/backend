@@ -15,21 +15,23 @@ def chat():
     return jsonify({'response': response})
 
 def generate_response(message):
-    apiKey = 'sk-...'
-    endpoint = 'https://api.openai.com/v1/completions'
+    API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDMxNTk5NzEtOTRiNC00NjIxLTgwMDEtNWZhNDc1NDUwNmYyIiwidHlwZSI6ImFwaV90b2tlbiJ9.TmaYrVHsHgq9dYqD7t-yQba8aaX0XKu-VNaLWGgbPzE'
+    question = message
+    url = f"https://api.edenai.co/v1/question-answering"
     headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {apiKey}'
+        f'Authorization':'Bearer 🔑 {API_KEY}'
     }
-    payload = {
-        'model': 'gpt-3.5-turbo-0125',
-        'prompt': message,
-        'max_tokens': 150  # Adjust as needed
+    data = {
+        "question": question
     }
-    response = requests.post(endpoint, headers=headers, json=payload)
-    data = response.json()
-    print(data)
-    return data['choices'][0]['text'].strip()
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 200:
+        data = response.json()
+        answer = data.get('answer')
+        return f"Answer: {answer}"
+    else:
+        print(f"Error: {response.status_code}")
+        print(response.text)
 
 
 

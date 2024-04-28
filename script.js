@@ -12,7 +12,7 @@ document.getElementById("solve-button").addEventListener("click", function() {
     for (var i = 0; i < table.length; i++) {
         console.log(table[i])
     }
-    fetch(`http://localhost:5000/solve/123`, {
+    fetch(`http://167.99.139.121:5000/solve/123`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
